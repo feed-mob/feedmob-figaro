@@ -2,7 +2,7 @@ source "https://rubygems.org"
 
 gemspec
 
-gem "rails", ">= 3.0.3", "< 4.3"
+gem 'rails', '~> 6.1.7.6'
 
 group :test do
   gem "aruba", "~> 0.6.2"
