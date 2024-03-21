@@ -7,12 +7,12 @@ module Figaro
       'sidekiq.yml'
     ].freeze
 
-    def initialize(host, appId, cluster, custom_config_file, opts = {})
+    def initialize(host, appId, cluster, custom_config_file, use_auth)
       @host = host
       @appId = appId
       @cluster = cluster
       @custom_config_file = custom_config_file.present? ? [YAML.load(custom_config_file)].flatten : []
-      @use_auth = opts[:use_auth]
+      @use_auth = use_auth
     end
 
     def start

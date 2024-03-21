@@ -15,8 +15,8 @@ module Figaro
           custom_config_file = ::ENV['APOLLO_CUSTOM_CONFIG_FILE']
           use_auth = ::ENV['USE_APOLLO_AUTH']
 
-          if ::ENV['SKIP_APOLLO'].blank?
-            Figaro::ApolloClient.new(host, appId, cluster, custom_config_file, use_auth: use_auth).start
+          if ::ENV['SKIP_APOLLO'].blank? && (::Rails.env.stage? || ::Rails.env.production?)
+            Figaro::ApolloClient.new(host, appId, cluster, custom_config_file, use_auth).start
           end
         rescue => e
           p "[Apollo] start error: #{e}"
