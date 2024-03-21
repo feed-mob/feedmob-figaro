@@ -50,8 +50,7 @@ module Figaro
     def get_response(file_name)
       # url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
       # uri = URI.parse(url)
-      # url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}?label=chintesting"
-      url = '/configs/stage-chintest/default/application.yml?label=chintesting'
+      url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}?label=chintesting"
       uri = URI.parse("#{@host}#{url}")
 
       @credentails ? query_by_signature(url, uri) : query_normal(uri)
