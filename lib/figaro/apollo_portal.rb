@@ -68,7 +68,11 @@ module Figaro
     end
 
     def query_by_signature(url, uri)
+      puts "==== >> #{url}"
+      puts "==== >> #{@app_id}"
+      puts "==== >> #{@credentails}"
       headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, @credentails)
+      puts "==== headers ==> #{headers}"
 
       Net::HTTP.start(uri.host, uri.port,
         :use_ssl => uri.scheme == 'https') { |http|
