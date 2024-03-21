@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+require 'figaro/apollo_signature'
 
 module Figaro
   class ApolloPortal

@@ -3,7 +3,6 @@ require "figaro/env"
 require "figaro/application"
 require 'figaro/apollo_portal'
 require 'figaro/apollo_params'
-require 'figaro/apollo_signature'
 
 module Figaro
   extend self
