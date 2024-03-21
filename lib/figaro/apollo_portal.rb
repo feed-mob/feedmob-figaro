@@ -53,7 +53,7 @@ module Figaro
       url = '/configs/stage-chintest/default/application.yml?label=chintesting'
       uri = URI.parse("#{@host}#{url}")
 
-      @credentails.present? ? query_by_signature(url, uri) : query_normal(uri)
+      @credentails.blank? ? query_normal(uri) : query_by_signature(url, uri)
     rescue Net::ReadTimeout, Net::OpenTimeout
       puts '[Apollo] Application Center can not connect now!'
     end
