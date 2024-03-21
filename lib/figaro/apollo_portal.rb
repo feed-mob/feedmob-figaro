@@ -47,17 +47,35 @@ module Figaro
     end
 
     def get_response(file_name)
-      url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
-      uri = URI.parse(url)
+      # url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
+      # uri = URI.parse(url)
+      # url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}?label=chintesting"
+      url = '/configs/stage-chintest/default/application.yml?label=chintesting'
+      uri = URI.parse("#{@host}#{url}")
 
-      Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') do |http|
-        request = Net::HTTP::Get.new uri, "Authorization" => "#{@credentails}"
-
-        http.request(request)
-      end
+      @credentails.present? ? query_by_signature(url, uri) : query_normal(uri)
     rescue Net::ReadTimeout, Net::OpenTimeout
       puts '[Apollo] Application Center can not connect now!'
+    end
+
+    def query_normal(uri)
+      Net::HTTP.start(uri.host, uri.port,
+        :use_ssl => uri.scheme == 'https') do |http|
+        request = Net::HTTP::Get.new(uri)
+        http.request(request)
+      end
+    end
+
+    def query_by_signature(url, uri)
+      headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, @credentails)
+
+      Net::HTTP.start(uri.host, uri.port,
+        :use_ssl => uri.scheme == 'https') { |http|
+        request = Net::HTTP::Get.new(uri)
+        request['Authorization'] = headers['Authorization']
+        request['Timestamp'] = headers['Timestamp']
+        http.request(request)
+      }
     end
   end
 end

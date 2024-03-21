@@ -8,7 +8,7 @@ module Figaro
       appId = ::ENV['APOLLO_APP_ID']
       cluster = ::ENV['APOLLO_CLUSTER']
       namespaces = ::ENV['APOLLO_NAMESPACES']
-      credentails = ::ENV[appId]
+      credentails = ::ENV[appId] || ::ENV['APOLLO_SECRET']
 
       @params = {
         host: host,
