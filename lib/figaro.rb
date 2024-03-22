@@ -47,7 +47,7 @@ module Figaro
       apollo_credential.load
 
       options = Figaro::ApolloParams.new.params
-      valid_options.reject{|key| apollo_can_blank_config.include?(key) }
+      valid_options = options.reject{|key| apollo_can_blank_config.include?(key) }
       if !valid_options.values.include?(nil) && ::ENV['SKIP_APOLLO'].blank?
         Figaro::ApolloPortal.new(**options).start
       else
