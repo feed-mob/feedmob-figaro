@@ -47,6 +47,8 @@ module Figaro
       if !options.values.include?(nil) &&
           ::ENV['SKIP_APOLLO'].blank?
         Figaro::ApolloPortal.new(**options).start
+      else
+        puts "[Apollo] config error: config include nil value, will not load config from Apollo"
       end
     rescue => e
       puts "[Apollo] start error: #{e}"
