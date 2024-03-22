@@ -12,6 +12,8 @@ module Figaro
     # app_id: The Project name
     # cluster_name: The Apollo Cluster
     # namespace_names: Files on Apollo existed
+    # credentails: secret for Apollo AppId
+    # label: label for gray deploy
     def initialize(options = {})
       options.each { |name, value| instance_variable_set("@#{name}", value) }
     end
@@ -50,7 +52,8 @@ module Figaro
     def get_response(file_name)
       # url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
       # uri = URI.parse(url)
-      url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}?label=chintesting"
+      url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}"
+      url = "#{url}?label=#{@label}" unless @label.nil?
       uri = URI.parse("#{@host}#{url}")
 
       @credentails ? query_by_signature(url, uri) : query_normal(uri)
@@ -59,6 +62,7 @@ module Figaro
     end
 
     def query_normal(uri)
+      puts "==== >> #{url}"
       Net::HTTP.start(uri.host, uri.port,
         :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Get.new(uri)

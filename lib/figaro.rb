@@ -43,7 +43,7 @@ module Figaro
       apollo_credential.load
 
       options = Figaro::ApolloParams.new.params
-
+      puts "==== options ==> #{options}, #{options.values}"
       if !options.values.include?(nil) &&
           ::ENV['SKIP_APOLLO'].blank?
         Figaro::ApolloPortal.new(**options).start
