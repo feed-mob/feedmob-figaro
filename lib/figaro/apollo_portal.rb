@@ -62,7 +62,7 @@ module Figaro
     end
 
     def query_normal(uri)
-      puts "==== >> #{url}"
+
       Net::HTTP.start(uri.host, uri.port,
         :use_ssl => uri.scheme == 'https') do |http|
         request = Net::HTTP::Get.new(uri)
