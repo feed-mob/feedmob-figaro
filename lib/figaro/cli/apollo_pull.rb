@@ -27,22 +27,29 @@ module Figaro
         begin
           load_apollo_fixed_config
           apollo_options = Figaro::ApolloParams.new.params
+          valid_options = apollo_options.reject{|key| apollo_can_blank_config.include?(key) }
 
-          if !apollo_options.values.include?(nil) &&
+          if !valid_options.values.include?(nil) &&
               ::ENV['SKIP_APOLLO'].nil?
             Figaro::ApolloPortal.new(**apollo_options).start
+          else
+            puts "[Apollo] config error: config include nil value, will not load config from Apollo"
           end
         rescue => e
           puts "[Apollo] start error: #{e}"
         end
       end
-      
+
       private
 
       def load_apollo_fixed_config
         APOLLO_FIXED_PATH.each do |k, v|
           Figaro::Application.new(path: v, environment: options[:environment]).load
         end
+      end
+
+      def apollo_can_blank_config
+        [:credentails, :label]
       end
     end
   end
