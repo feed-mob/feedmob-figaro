@@ -50,8 +50,6 @@ module Figaro
     end
 
     def get_response(file_name)
-      # url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
-      # uri = URI.parse(url)
       url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}"
       url = "#{url}?label=#{@label}" unless @label.nil?
       uri = URI.parse("#{@host}#{url}")
@@ -70,12 +68,7 @@ module Figaro
     end
 
     def query_by_signature(url, uri)
-      puts "==== >> #{url}"
-      puts "==== >> #{@app_id}"
-      puts "==== >> #{@credentails}"
       headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, @credentails)
-      puts "==== headers ==> #{headers}"
-
       Net::HTTP.start(uri.host, uri.port,
         :use_ssl => uri.scheme == 'https') { |http|
         request = Net::HTTP::Get.new(uri)
