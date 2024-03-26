@@ -42,6 +42,7 @@ module Figaro
         file_content = res_body['configurations']['content']
         write_yml(file_name, file_content, res_body['dataChangeLastModifiedTime'])
       end
+      clear_env
     end
 
     def write_yml(file_name, file_content, timestamp)
@@ -80,6 +81,11 @@ module Figaro
 
     def secret
       ::ENV[@secret_key] || ::ENV[@app_id]
+    end
+
+    def clear_env
+      ::ENV[@secret_key] = nil
+      ::ENV[@app_id] = nil
     end
   end
 end
