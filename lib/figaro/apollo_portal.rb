@@ -12,7 +12,7 @@ module Figaro
     # app_id: The Project name
     # cluster_name: The Apollo Cluster
     # namespace_names: Files on Apollo existed
-    # credentails: secret for Apollo AppId
+    # secret_key: get secret from ENV by this key
     # label: label for gray deploy
     def initialize(options = {})
       options.each { |name, value| instance_variable_set("@#{name}", value) }
@@ -54,7 +54,7 @@ module Figaro
       url = "#{url}?label=#{@label}" unless @label.nil?
       uri = URI.parse("#{@host}#{url}")
 
-      @credentails ? query_by_signature(url, uri) : query_normal(uri)
+      secret ? query_by_signature(url, uri) : query_normal(uri)
     rescue Net::ReadTimeout, Net::OpenTimeout
       puts '[Apollo] Application Center can not connect now!'
     end
@@ -68,7 +68,7 @@ module Figaro
     end
 
     def query_by_signature(url, uri)
-      headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, @credentails)
+      headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, secret)
       Net::HTTP.start(uri.host, uri.port,
         :use_ssl => uri.scheme == 'https') { |http|
         request = Net::HTTP::Get.new(uri)
@@ -76,6 +76,10 @@ module Figaro
         request['Timestamp'] = headers['Timestamp']
         http.request(request)
       }
+    end
+
+    def secret
+      ::ENV[@secret_key] || ::ENV[@app_id]
     end
   end
 end

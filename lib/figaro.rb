@@ -37,7 +37,7 @@ module Figaro
   end
 
   def apollo_can_blank_config
-    [:credentails, :label]
+    [:label]
   end
 
   def load

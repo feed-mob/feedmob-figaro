@@ -13,7 +13,6 @@ module Figaro
       secret_key = "APOLLO_SECRET_#{appId}".gsub('-', '_').upcase
       label_key = "APOLLO_LABEL_#{appId}".gsub('-', '_').upcase
 
-      credentails = ::ENV[secret_key] || ::ENV[appId]
       label = ::ENV[label_key]
 
       @params = {
@@ -22,7 +21,7 @@ module Figaro
         app_id: appId,
         cluster_name: cluster,
         namespace_names: namespaces.split(',').map { |item| item.strip },
-        credentails: credentails,
+        secret_key: secret_key,
         label: label
       }
     end
