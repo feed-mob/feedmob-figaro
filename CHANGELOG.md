@@ -1,3 +1,7 @@
+## 1.1.2 / 2024-03-25
+
+* [ENHANCEMENT] pull configs by secret auth
+
 ## 1.1.1 / 2015-04-30
 
 * [BUGFIX] Fix crash when environment-specific configuration is `nil`

@@ -1,5 +1,6 @@
 require 'net/http'
 require 'json'
+require 'figaro/apollo_signature'
 
 module Figaro
   class ApolloPortal
@@ -11,6 +12,8 @@ module Figaro
     # app_id: The Project name
     # cluster_name: The Apollo Cluster
     # namespace_names: Files on Apollo existed
+    # secret_key: get secret from ENV by this key
+    # label: label for gray deploy
     def initialize(options = {})
       options.each { |name, value| instance_variable_set("@#{name}", value) }
     end
@@ -47,17 +50,36 @@ module Figaro
     end
 
     def get_response(file_name)
-      url = "#{@host}/openapi/v1/envs/#{@env}/apps/#{@app_id}/clusters/#{@cluster_name}/namespaces/#{file_name}/releases/latest"
-      uri = URI.parse(url)
+      url = "/configs/#{@app_id}/#{@cluster_name}/#{file_name}"
+      url = "#{url}?label=#{@label}" unless @label.nil?
+      uri = URI.parse("#{@host}#{url}")
 
-      Net::HTTP.start(uri.host, uri.port,
-        :use_ssl => uri.scheme == 'https') do |http|
-        request = Net::HTTP::Get.new uri, "Authorization" => "#{@credentails}"
-
-        http.request(request)
-      end
+      secret ? query_by_signature(url, uri) : query_normal(uri)
     rescue Net::ReadTimeout, Net::OpenTimeout
       puts '[Apollo] Application Center can not connect now!'
+    end
+
+    def query_normal(uri)
+      Net::HTTP.start(uri.host, uri.port,
+        :use_ssl => uri.scheme == 'https') do |http|
+        request = Net::HTTP::Get.new(uri)
+        http.request(request)
+      end
+    end
+
+    def query_by_signature(url, uri)
+      headers = Figaro::ApolloSignature.build_http_headers(url, @app_id, secret)
+      Net::HTTP.start(uri.host, uri.port,
+        :use_ssl => uri.scheme == 'https') { |http|
+        request = Net::HTTP::Get.new(uri)
+        request['Authorization'] = headers['Authorization']
+        request['Timestamp'] = headers['Timestamp']
+        http.request(request)
+      }
+    end
+
+    def secret
+      ::ENV[@secret_key] || ::ENV[@app_id]
     end
   end
 end

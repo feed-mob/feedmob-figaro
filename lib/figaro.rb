@@ -36,6 +36,10 @@ module Figaro
     @apollo_credential ||= apollo_credential_adapter.new
   end
 
+  def apollo_can_blank_config
+    [:label]
+  end
+
   def load
     begin
       # Initilize Apollo configuration
@@ -43,10 +47,11 @@ module Figaro
       apollo_credential.load
 
       options = Figaro::ApolloParams.new.params
-
-      if !options.values.include?(nil) &&
-          ::ENV['SKIP_APOLLO'].blank?
+      valid_options = options.reject{|key| apollo_can_blank_config.include?(key) }
+      if !valid_options.values.include?(nil) && ::ENV['SKIP_APOLLO'].blank?
         Figaro::ApolloPortal.new(**options).start
+      else
+        puts "[Apollo] config error: config include nil value, will not load config from Apollo"
       end
     rescue => e
       puts "[Apollo] start error: #{e}"
