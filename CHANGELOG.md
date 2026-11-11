@@ -1,3 +1,10 @@
+## 1.2.0
+
+- Support modern Thor and Bundler dependency resolution without dropping older Thor versions.
+- Replace removed Ruby/Bundler APIs, retain trusted YAML alias semantics on Psych 4+, and declare JSON/HTTP dependencies.
+- Add Rails boot, Apollo and CLI integration checks and a Ruby 2.7–4.0 / Rails 6.1–8.1 CI matrix.
+- Preserve external ENV precedence, Apollo namespaces and SKIP_APOLLO behavior.
+
 ## 1.1.1 / 2015-04-30
 
 * [BUGFIX] Fix crash when environment-specific configuration is `nil`

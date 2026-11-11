@@ -25,7 +25,11 @@ module Figaro
 
       if defined? Bundler
         def system(*)
-          Bundler.with_clean_env { super }
+          if Bundler.respond_to?(:with_unbundled_env)
+            Bundler.with_unbundled_env { super }
+          else
+            Bundler.with_clean_env { super }
+          end
         end
       end
     end
