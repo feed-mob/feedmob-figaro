@@ -57,7 +57,11 @@ module Figaro
     end
 
     def parse(path)
-      File.exist?(path) && YAML.load(ERB.new(File.read(path)).result) || {}
+      return {} unless File.exist?(path)
+
+      content = ERB.new(File.read(path)).result
+      # Application config is trusted code (ERB); retain legacy YAML aliases and types.
+      (YAML.respond_to?(:unsafe_load) ? YAML.unsafe_load(content) : YAML.load(content)) || {}
     end
 
     def global_configuration

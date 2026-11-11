@@ -1,0 +1,56 @@
+name: Compatibility
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+
+permissions:
+  contents: read
+
+jobs:
+  ruby-rails:
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - ruby: '2.7'
+            rails: '~> 6.1.0'
+            bundler: '2.4.22'
+          - ruby: '3.2'
+            rails: '~> 7.2.0'
+            bundler: '2.5.23'
+          - ruby: '3.4'
+            rails: '~> 8.1.0'
+            bundler: '4.0.20'
+          - ruby: '4.0'
+            rails: '~> 8.1.0'
+            bundler: '4.0.20'
+    env:
+      BUNDLE_GEMFILE: gemfiles/modern.gemfile
+      RAILS_VERSION: ${{ matrix.rails }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ matrix.ruby }}
+          bundler: ${{ matrix.bundler }}
+          bundler-cache: true
+      - name: Rails boot, Apollo and CLI integration
+        run: bundle exec ruby script/check_compatibility.rb
+      - name: Existing core specs
+        run: >-
+          bundle exec rspec --options /dev/null --require ./spec/modern_helper.rb
+          spec/figaro_spec.rb spec/figaro/application_spec.rb spec/figaro/env_spec.rb
+          spec/figaro/rails/application_spec.rb spec/figaro/apollo_client_spec.rb
+          --format progress --format json --out tmp/core-specs.json
+      - name: Build gem
+        run: bundle exec rake build
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: compatibility-ruby-${{ matrix.ruby }}
+          path: |
+            tmp/compatibility.json
+            tmp/core-specs.json
